@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='crosslinked',
-    version='0.3.0',
+    version='0.3.1',
     author='m8sec',
     license='GPLv3',
     long_description=long_description,
