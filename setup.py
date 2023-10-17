@@ -10,7 +10,7 @@ setup(
     license='GPLv3',
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url='https://github.com/m8sec/CrossLinked',
+    url='https://github.com/Borghese-Gladiator/CrossLinked',
     packages=find_packages(include=[
         "crosslinked", "crosslinked.*"
     ]),
