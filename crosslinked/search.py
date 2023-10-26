@@ -102,7 +102,7 @@ class CrossLinked:
         try:
             name = data.split("-")[0].strip()
             name = unidecode(name).lower()
-            return name.replace("\"", "\\\"")
+            return name.replace('"', '""')
         except:
             return False
 
