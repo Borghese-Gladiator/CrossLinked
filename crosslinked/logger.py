@@ -64,7 +64,7 @@ def setup_debug_logger():
 
 def setup_file_logger(file_name, log_name='cLinked_file', file_mode='w'):
     formatter = logging.Formatter('%(message)s')
-    fileHandler = logging.FileHandler(file_name, file_mode)
+    fileHandler = logging.FileHandler(file_name, file_mode, encoding='utf-8')
     fileHandler.setFormatter(formatter)
 
     logger = logging.getLogger(log_name)

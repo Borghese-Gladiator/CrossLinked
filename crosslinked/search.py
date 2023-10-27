@@ -87,7 +87,10 @@ class CrossLinked:
 
     def link_parser(self, url, link):
         u = {'url': url}
-        u['raw_text'] = link.text
+        if isinstance(link.text, bytes):
+            u['raw_text'] = link.text.encode('utf-8')
+        else:
+            u['raw_text'] = link.text
         u['header_text'] = unidecode(link.text.split("|")[0].split("...")[0])  # Capture link text before trailing chars
         u['title'] = self.parse_linkedin_title(u['header_text'])               # Extract job title
         u['name'] = self.parse_linkedin_name(u['header_text'])                 # Extract whole name
