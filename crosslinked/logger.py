@@ -78,7 +78,7 @@ def setup_file_logger(file_name, log_name='cLinked_file', file_mode='w'):
 
 def first_run(logger):
     # init headings in CSV log file
-    logger.info('Datetime,Search,Name,Title,URL,rawText')
+    logger.info('timestamp,search_engine,name,title,linkedin_url,raw_text')
 
 
 def setup_cli_logger(log_level=logging.INFO, logger_name='cLinked'):

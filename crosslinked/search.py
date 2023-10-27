@@ -40,6 +40,7 @@ class Timer(threading.Thread):
 class CrossLinked:
     def __init__(self, search_engine, target, timeout, conn_timeout=3, proxies=[], jitter=0):
         self.results = []
+        self.results_urls = []
         self.url = {'google': 'https://www.google.com/search?q=site:linkedin.com/in+"{}"&num=100&start={}',
                     'bing': 'http://www.bing.com/search?q="{}"+site:linkedin.com/in&first={}'}
 
@@ -120,14 +121,19 @@ class CrossLinked:
 
     def log_results(self, d):
         # Prevent Duplicates & non-standard responses (i.e: "<span>linkedin.com</span></a>")
-        if d in self.results:
+        if d['url'] in self.results_urls:
             return
-        elif 'linkedin.com' in d['name']:
+        elif d in self.results:
+            return
+        elif 'linkedin.com' in d['name'] or 'linkedin' in d['name']:
+            return
+        elif '#' in d['name']:
             return
 
         self.results.append(d)
+        self.results_urls.append(d['url'])
         # Search results are logged to names.csv but names.txt is not generated until end to prevent duplicates
-        logging.debug('name: {:25} RawTxt: {}'.format(d['name'], d['text']))
+        logging.debug('name: {:25} text: {}'.format(d['name'], d['text']))
         csv.info('"{}","{}","{}","{}","{}","{}",'.format(self.runtime, self.search_engine, d['name'], d['title'], d['url'], d['text']))
 
 

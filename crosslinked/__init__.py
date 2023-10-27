@@ -3,6 +3,7 @@
 # License: GPLv3
 import re
 import argparse
+import os
 from sys import exit
 from csv import reader
 from crosslinked import utils
@@ -53,24 +54,10 @@ def start_scrape(args):
     Log.info("Searching {} for valid employee names at \"{}\"".format(', '.join(args.engine), args.company_name))
 
     for search_engine in args.engine:
-        c = CrossLinked(search_engine,  args.company_name, args.timeout, 3, args.proxy, args.jitter)
+        c = CrossLinked(search_engine, args.company_name, args.timeout, 3, args.proxy, args.jitter)
         if search_engine in c.url.keys():
             tmp += c.search()
     return tmp
-
-
-def start_parse(args):
-    tmp = []
-    utils.file_exists(args.company_name, contents=False)
-    Log.info('Parsing employee names from \"{}\"'.format(args.company_name))
-
-    with open(args.company_name, 'r') as f:
-        csv_data = reader(f, delimiter=',')
-        next(csv_data)
-        for r in csv_data:
-            tmp.append({'name': r[2].strip() }) if r[2] else False
-    return tmp
-
 
 def format_names(args, data, logger):
     tmp = []
@@ -83,42 +70,17 @@ def format_names(args, data, logger):
             tmp.append(name)
     Log.success("{} unique names added to {}!".format(len(tmp), args.outfile+".txt"))
 
-
-def nformatter(nformat, name):
-    # Get position of name values in text
-    tmp = nformat.split('}')
-    f_position = int(re.search(r'(-?\d+)', tmp[0]).group(0)) if ':' in tmp[0] else 0
-    l_position = int(re.search(r'(-?\d+)', tmp[1]).group(0)) if ':' in tmp[1] else -1
-
-    # Extract names from raw text
-    tmp = name.split(' ')
-    try:
-        f_name = tmp[f_position] if len(tmp) > 2 else tmp[0]
-        l_name = tmp[l_position] if len(tmp) > 2 else tmp[-1]
-    except:
-        f_name = tmp[0]
-        l_name = tmp[-1]
-
-    # Use replace function to create final output
-    val = re.sub(r'-?\d+:', '', nformat)
-    val = val.replace('{f}', f_name[0])
-    val = val.replace('{first}', f_name)
-    val = val.replace('{l}', l_name[0])
-    val = val.replace('{last}', l_name)
-    return val
-
-
 def main():
     banner()
     args = cli()
 
     try:
-        if args.debug: setup_debug_logger(); debug_args(args)                                  # Setup Debug logging
-        txt = setup_file_logger(args.outfile+".txt", log_name="cLinked_txt", file_mode='w')    # names.txt overwritten
-        csv = setup_file_logger(args.outfile+".csv", log_name="cLinked_csv", file_mode='a')    # names.csv appended
+        if args.debug:
+            setup_debug_logger()
+            debug_args(args)  # Setup Debug logging
+        csv = setup_file_logger(args.outfile+".csv", log_name="cLinked_csv", file_mode='w')    # names.csv overwritten
+        start_scrape(args)
 
-        data = start_parse(args) if args.company_name.endswith('.csv') else start_scrape(args)
-        format_names(args, data, txt) if len(data) > 0 else Log.warn('No results found')
     except KeyboardInterrupt:
         Log.warn("Key event detected, closing...")
         exit(0)
