@@ -134,6 +134,8 @@ class CrossLinked:
         self.results_urls.append(d['url'])
         # Search results are logged to names.csv but names.txt is not generated until end to prevent duplicates
         logging.debug('name: {:25} text: {}'.format(d['name'], d['text']))
+        d['name'] = d['name'].replace('"', '""')
+        d['text'] = d['text'].replace('"', '""')
         csv.info('"{}","{}","{}","{}","{}","{}",'.format(self.runtime, self.search_engine, d['name'], d['title'], d['url'], d['text']))
 
 
