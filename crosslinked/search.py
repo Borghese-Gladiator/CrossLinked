@@ -87,9 +87,10 @@ class CrossLinked:
 
     def link_parser(self, url, link):
         u = {'url': url}
-        u['text'] = unidecode(link.text.split("|")[0].split("...")[0])  # Capture link text before trailing chars
-        u['title'] = self.parse_linkedin_title(u['text'])               # Extract job title
-        u['name'] = self.parse_linkedin_name(u['text'])                 # Extract whole name
+        u['raw_text'] = link.text
+        u['header_text'] = unidecode(link.text.split("|")[0].split("...")[0])  # Capture link text before trailing chars
+        u['title'] = self.parse_linkedin_title(u['header_text'])               # Extract job title
+        u['name'] = self.parse_linkedin_name(u['header_text'])                 # Extract whole name
         return u
 
     def parse_linkedin_title(self, data):
@@ -133,10 +134,10 @@ class CrossLinked:
         self.results.append(d)
         self.results_urls.append(d['url'])
         # Search results are logged to names.csv but names.txt is not generated until end to prevent duplicates
-        logging.debug('name: {:25} text: {}'.format(d['name'], d['text']))
         d['name'] = d['name'].replace('"', '""')
-        d['text'] = d['text'].replace('"', '""')
-        csv.info('"{}","{}","{}","{}","{}","{}",'.format(self.runtime, self.search_engine, d['name'], d['title'], d['url'], d['text']))
+        d['header_text'] = d['header_text'].replace('"', '""')
+        d['raw_text'] = d['raw_text'].replace('"', '""')
+        csv.info('"{}","{}","{}","{}","{}","{}","{}"'.format(self.runtime, self.search_engine, d['name'], d['title'], d['url'], d['header_text'], d['raw_text']))
 
 
 def get_statuscode(resp):
